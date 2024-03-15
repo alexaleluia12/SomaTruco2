@@ -16,4 +16,16 @@ class GameSmokeInstrumentalTest {
         assertEquals(1, currentStateUi.playerOne.count)
         assertEquals(3, currentStateUi.playerTwo.count)
     }
+
+    @Test
+    fun viewModel_correct_show_win() {
+        repeat(4) {
+            vm.incByThreeForPlayerOne()
+        }
+        val currentStateUi = vm.uiState
+
+        assertEquals(0, currentStateUi.playerOne.count)
+        assertEquals(1, currentStateUi.playerOne.winCount)
+    }
+
 }

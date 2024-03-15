@@ -47,6 +47,7 @@ fun Screen(
     Row {
         Player(
             points = uiState.playerOne.count,
+            wins = uiState.playerOne.winCount,
             onAddOne = appViewModel::incByOneForPlayerOne,
             onAddThree = appViewModel::incByThreeForPlayerOne,
             onMinusOne = appViewModel::decByOneForPlayerOne
@@ -54,6 +55,7 @@ fun Screen(
         Spacer(modifier = Modifier.width(16.dp))
         Player(
             points = uiState.playerTwo.count,
+            wins = uiState.playerTwo.winCount,
             onAddOne = appViewModel::incByOneForPlayerTwo,
             onAddThree = appViewModel::incByThreeForPlayerTwo,
             onMinusOne = appViewModel::decByOneForPlayerTwo,
@@ -65,6 +67,7 @@ fun Screen(
 @Composable
 fun Player(
     points: Int = 0,
+    wins: Int = 0,
     onAddThree:() -> Unit,
     onAddOne: () -> Unit,
     onMinusOne: () -> Unit,
@@ -87,8 +90,9 @@ fun Player(
             Button(onClick = onMinusOne) {
                 Text("-1")
             }
-
-
+        }
+        Button(onClick = {}) {
+            Text(wins.toString())
         }
     }
 }
