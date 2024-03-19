@@ -35,6 +35,17 @@ class CountController(val player1: Player, val player2: Player) {
         }
     }
 
+    fun resetAll() {
+        player1.apply {
+            winCount = 0
+            count = 0
+        }
+        player2.apply {
+            winCount = 0
+            count = 0
+        }
+    }
+
     fun addThree(player: Player):Boolean { // podia usar delegate e jogar esse metodos no Player
         player.count += 3
         return verifyWinCondition()

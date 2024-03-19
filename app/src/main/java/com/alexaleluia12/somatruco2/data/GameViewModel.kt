@@ -1,5 +1,6 @@
 package com.alexaleluia12.somatruco2.data
 
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -11,17 +12,15 @@ class GameViewModel: ViewModel() {
     private val p2 = Player(name = "Q")
     var uiState: GameState by mutableStateOf(GameState(p1.copy(), p2.copy()))
        private set
-
     private val counter = CountController(p1, p2)
 
     fun incByOneForPlayerOne() {
+
         val changeBoth = counter.addOne(p1)
         uiState = if (changeBoth) {
             // no caso de um vitoria é recessario atualizar o valor dos dois jogadores
             uiState.copy(playerOne = p1.copy(), playerTwo = p2.copy())
         } else {
-            println("ref pura ${p1.count}")
-            println("ref uiState ${uiState.playerOne.count}")
             uiState.copy(playerOne = p1.copy())
         }
     }
@@ -31,8 +30,6 @@ class GameViewModel: ViewModel() {
         uiState = if (changeBoth) {
             uiState.copy(playerOne = p1.copy(), playerTwo = p2.copy())
         } else {
-            println("ref pura ${p2.count}")
-            println("ref uiState ${uiState.playerTwo.count}")
             uiState.copy(playerTwo = p2.copy())
         }
     }
@@ -68,10 +65,15 @@ class GameViewModel: ViewModel() {
         uiState = uiState.copy(playerTwo = p2.copy())
     }
 
+    fun reset() {
+        counter.resetAll()
+        uiState = uiState.copy(playerOne = p1.copy(), playerTwo = p2.copy())
+    }
+
 
 }
 
 data class GameState(
     val playerOne: Player,
-    val playerTwo: Player
+    val playerTwo: Player,
 )

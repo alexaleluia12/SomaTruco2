@@ -1,7 +1,10 @@
 milestone
-    - fnc alerta de 11
-    - fnc zerar tudo (clear)
     - fnc mudar nome das equiques, mostrando o quandos caracteres faltam
-    * tem mais varias
+    - agrupar: reset + troca de nome num menu no topo
+    - traducao: es, en, pt
+    - lifecycle suporte
+    - efeito holo button (qnd clica no botao mudar de cor)
+    - deixar os botoes quadrados
+    - alerta sono qnd estiver de 11
 
-proxima tarefa: usar dados nao mutaveis puros direto no StateHolder
+proxima tarefa: fnc mudar nome das equiques, mostrando o quandos caracteres faltam

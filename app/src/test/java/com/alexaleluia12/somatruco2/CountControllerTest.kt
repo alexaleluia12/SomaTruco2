@@ -21,4 +21,24 @@ class CountControllerTest {
         assertEquals(0, playerB.winCount)
         assertEquals("The other player wins so points are restarted",0, playerB.count)
     }
+
+    @Test
+    fun `correct reset data of all players`() {
+        val playerA = Player(name = "A")
+        val playerB = Player(name = "B")
+        val countControler = CountController(playerA, playerB)
+        countControler.addOne(playerB)
+        repeat(4) {
+            countControler.addThree(playerA)
+        }
+        repeat(4) {
+            countControler.addThree(playerB)
+        }
+        countControler.resetAll()
+        assertEquals(0, playerA.count)
+        assertEquals(0, playerA.winCount)
+
+        assertEquals(0, playerB.count)
+        assertEquals(0, playerB.winCount)
+    }
 }
