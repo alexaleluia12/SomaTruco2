@@ -28,4 +28,14 @@ class GameSmokeInstrumentalTest {
         assertEquals(1, currentStateUi.playerOne.winCount)
     }
 
+    @Test
+    fun viewModel_update_name_does_not_affect_other() {
+        val newName = "Bob"
+        val prevPlayerTwoName = vm.uiState.playerTwo.name
+        vm.changeNamePlayerOne(newName)
+        val currentStateUi = vm.uiState
+
+        assertEquals(newName, currentStateUi.playerOne.name)
+        assertEquals(prevPlayerTwoName, currentStateUi.playerTwo.name)
+    }
 }

@@ -70,7 +70,15 @@ class GameViewModel: ViewModel() {
         uiState = uiState.copy(playerOne = p1.copy(), playerTwo = p2.copy())
     }
 
+    fun changeNamePlayerOne(newName: String) {
+        p1.name = newName
+        uiState = uiState.copy(playerOne = p1.copy())
+    }
 
+    fun changeNamePlayerTwo(newName: String) {
+        p2.name = newName
+        uiState = uiState.copy(playerTwo = p2.copy())
+    }
 }
 
 data class GameState(
