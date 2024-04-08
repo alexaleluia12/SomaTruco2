@@ -4,15 +4,24 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -84,6 +94,47 @@ fun Screen(
             text = { Text("Cuidado! esta de 11") }
         )
     }
+    var showResetAlert by remember { mutableStateOf(false) }
+
+    if (showResetAlert) {
+        AlertDialog(
+            onDismissRequest = {
+                showResetAlert = false
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showResetAlert = false
+                    appViewModel.reset()
+                }) {
+                    Text("Ok")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showResetAlert = false }) {
+                    Text("Cancelar")
+                }
+            },
+            text = { Text("Deseja zerar todos pontos e voltar ao início") }
+        )
+    }
+
+
+    ScreamMenu(
+        reset = { showResetAlert = true },
+        optA = {
+            PlayerName(
+                name = uiState.playerOne.name,
+                onSaveName = appViewModel::changeNamePlayerOne,
+                finally = it
+            )
+        }, optB = {
+            PlayerName(
+                name = uiState.playerTwo.name,
+                onSaveName = appViewModel::changeNamePlayerTwo,
+                finally = it
+            )
+        }
+    )
 
     Row(
         modifier = modifier.fillMaxSize(),
@@ -112,32 +163,7 @@ fun Screen(
             onSaveName = appViewModel::changeNamePlayerTwo,
         )
 
-        var showResetAlert by remember { mutableStateOf(false) }
 
-        TextButton(onClick = { showResetAlert = true }) {
-            Text("Zerar tudo")
-        }
-        if (showResetAlert) {
-            AlertDialog(
-                onDismissRequest = {
-                    showResetAlert = false
-                },
-                confirmButton = {
-                    TextButton(onClick = {
-                        showResetAlert = false
-                        appViewModel.reset()
-                    }) {
-                        Text("Ok")
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showResetAlert = false }) {
-                        Text("Cancelar")
-                    }
-                },
-                text = { Text("Deseja zerar todos pontos e voltar ao início") }
-            )
-        }
     }
 
 }
@@ -159,7 +185,7 @@ fun Player(
         verticalArrangement = Arrangement.Center
     ) {
 
-        PlayerName(name = name, onSaveName)
+        PlayerName(name = name, onSaveName =  onSaveName, finally = { })
         Text(text = points.toString())
         // TODO(btn deve se quadrado)
         Button(onClick = onAddThree) {
@@ -181,7 +207,7 @@ fun Player(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayerName(name: String, onSaveName: (name: String) -> Unit) {
+fun PlayerName(name: String, onSaveName: (name: String) -> Unit, finally: () -> Unit) {
     var showChangeNameDialog by remember { mutableStateOf(false) }
 
     TextButton(onClick = { showChangeNameDialog = true }) {
@@ -193,11 +219,13 @@ fun PlayerName(name: String, onSaveName: (name: String) -> Unit) {
         AlertDialog(
             onDismissRequest = {
                 showChangeNameDialog = false
+                finally()
             },
             confirmButton = {
                 TextButton(onClick = {
                     showChangeNameDialog = false
                     onSaveName(tmpName)
+                    finally()
                 }) {
                     Text("Salvar")
                 }
@@ -205,6 +233,7 @@ fun PlayerName(name: String, onSaveName: (name: String) -> Unit) {
             dismissButton = {
                 TextButton(onClick = {
                     showChangeNameDialog = false
+                    finally()
                 }) {
                     Text("Cancelar")
                 }
@@ -225,6 +254,41 @@ fun PlayerName(name: String, onSaveName: (name: String) -> Unit) {
                 })
             }
         )
+    }
+}
+
+@Composable
+fun ScreamMenu(
+    reset: () -> Unit,
+    optA:  @Composable (() -> Unit) -> Unit, // clear menu after complete edit a name
+    optB:  @Composable (() -> Unit) -> Unit,
+) {
+    // nova callback passa clear e retorna composable
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .wrapContentSize(Alignment.TopEnd),
+        contentAlignment = Alignment.TopEnd
+    )
+    {
+        IconButton(onClick = { expanded = true }) {
+            Icon(Icons.Default.MoreVert, contentDescription = "More options")
+        }
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            DropdownMenuItem(text = { Text("Zerar tudo") }, onClick = {
+                expanded = false
+                reset()
+            })
+            DropdownMenuItem(text = {
+                optA() { expanded = false }
+            }, onClick = { }, leadingIcon = { Icon(Icons.Outlined.Edit, contentDescription = "editar") })
+
+            DropdownMenuItem(text = {
+                optB() { expanded = false }
+            }, onClick = { }, leadingIcon = { Icon(Icons.Outlined.Edit, contentDescription = "editar") })
+        }
     }
 }
 

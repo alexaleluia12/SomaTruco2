@@ -3,6 +3,7 @@ milestone
     - lifecycle suporte
     - efeito holo button (qnd clica no botao mudar de cor)
     - deixar os botoes quadrados
-    - alerta sono qnd estiver de 11
-
-proxima tarefa: agrupar: reset + troca de nome num menu no topo
+    - alerta sono qnd estiver de 11 
+    - suport rtl
+    - tela fica sempre ligada
+    - não permite rotoacao
