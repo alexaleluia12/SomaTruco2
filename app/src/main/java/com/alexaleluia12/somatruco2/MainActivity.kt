@@ -1,6 +1,7 @@
 package com.alexaleluia12.somatruco2
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -46,6 +47,7 @@ import com.alexaleluia12.somatruco2.ui.theme.SomaTruco2Theme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContent {
             SomaTruco2Theme {
                 // A surface container using the 'background' color from the theme
