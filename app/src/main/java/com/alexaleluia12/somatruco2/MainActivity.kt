@@ -1,5 +1,6 @@
 package com.alexaleluia12.somatruco2
 
+
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
@@ -18,6 +20,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,12 +39,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alexaleluia12.somatruco2.data.AppProperties
 import com.alexaleluia12.somatruco2.data.GameViewModel
+import com.alexaleluia12.somatruco2.ui.theme.Black
+import com.alexaleluia12.somatruco2.ui.theme.Red
 import com.alexaleluia12.somatruco2.ui.theme.SomaTruco2Theme
 
 class MainActivity : ComponentActivity() {
@@ -152,6 +159,7 @@ fun Screen(
             onAddThree = appViewModel::incByThreeForPlayerOne,
             onMinusOne = appViewModel::decByOneForPlayerOne,
             onSaveName = appViewModel::changeNamePlayerOne,
+            color = Black,
         )
         Spacer(modifier = Modifier.width(16.dp))
 
@@ -163,6 +171,7 @@ fun Screen(
             onAddThree = appViewModel::incByThreeForPlayerTwo,
             onMinusOne = appViewModel::decByOneForPlayerTwo,
             onSaveName = appViewModel::changeNamePlayerTwo,
+            color = Red,
         )
 
 
@@ -177,6 +186,7 @@ fun Player(
     points: Int = 0,
     wins: Int = 0,
     name: String = "P",
+    color: Color,
     onSaveName: (name: String) -> Unit,
     onAddThree: () -> Unit,
     onAddOne: () -> Unit,
@@ -190,15 +200,30 @@ fun Player(
         PlayerName(name = name, onSaveName =  onSaveName, finally = { })
         Text(text = points.toString())
         // TODO(btn deve se quadrado)
-        Button(onClick = onAddThree) {
-            Text("+3")
+        Button(
+            onClick = onAddThree,
+            shape=RectangleShape,
+            modifier=Modifier.padding(8.dp),
+            colors=ButtonDefaults.buttonColors(containerColor = color, contentColor = Color.White),
+            ) {
+            Text("+3",)
         }
-        Button(onClick = onAddOne) {
+        Button(
+            onClick = onAddOne,
+            shape = RectangleShape,
+            modifier = Modifier.padding(8.dp),
+            colors=ButtonDefaults.buttonColors(containerColor = color),
+        ) {
             Text("+1")
         }
 
-        Button(onClick = onMinusOne) {
-            Text("-1")
+        Button(
+            onClick = onMinusOne,
+            shape=RectangleShape,
+            modifier=Modifier.padding(8.dp),
+            colors=ButtonDefaults.buttonColors(containerColor = color),
+        ) {
+            Text("-1", )
         }
 
         Button(onClick = {}) {
