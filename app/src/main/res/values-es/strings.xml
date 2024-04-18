@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SomaTruco2</string>
+    <string name="availableSpace">Cambiar nombre (%1$d)</string>
+    <string name="ok">Aceptar</string>
+    <string name="breakthrow_point">¡Advertencia! Llega a 11</string>
+    <string name="cancel">Cancelar</string>
+    <string name="confir_reset_msg">Borrar todo y reiniciar desde cero</string>
+    <string name="save">Guardar</string>
+    <string name="description_menu">Más opciones</string>
+    <string name="clear_msg">Limpiar todo</string>
+    <string name="description_edit">editar</string>
+</resources>

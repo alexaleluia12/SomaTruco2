@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">SomaTruco2</string>
-    <string name="availableSpace">Mudar nome (%1$d)</string>
+    <string name="availableSpace">Change name(%1$d)</string>
+    <string name="ok">OK</string>
+    <string name="breakthrow_point">Warning! reach 11</string>
+    <string name="cancel">Cancel</string>
+    <string name="confir_reset_msg">Clear everything and restart from zero</string>
+    <string name="save">Save</string>
+    <string name="description_menu">More options</string>
+    <string name="clear_msg">Clear All</string>
+    <string name="description_edit">edit</string>
 </resources>

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,8 +14,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Edit
@@ -39,10 +43,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alexaleluia12.somatruco2.data.AppProperties
@@ -50,9 +63,12 @@ import com.alexaleluia12.somatruco2.data.GameViewModel
 import com.alexaleluia12.somatruco2.ui.theme.Black
 import com.alexaleluia12.somatruco2.ui.theme.Red
 import com.alexaleluia12.somatruco2.ui.theme.SomaTruco2Theme
+import com.alexaleluia12.somatruco2.ui.theme.Typography
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContent {
@@ -97,10 +113,10 @@ fun Screen(
             },
             confirmButton = {
                 TextButton(onClick = { canShowAlert = false }) {
-                    Text("Ok")
+                    Text(stringResource(R.string.ok))
                 }
             },
-            text = { Text("Cuidado! esta de 11") }
+            text = { Text(stringResource(R.string.breakthrow_point)) }
         )
     }
     var showResetAlert by remember { mutableStateOf(false) }
@@ -115,15 +131,15 @@ fun Screen(
                     showResetAlert = false
                     appViewModel.reset()
                 }) {
-                    Text("Ok")
+                    Text(stringResource(R.string.ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showResetAlert = false }) {
-                    Text("Cancelar")
+                    Text(stringResource(R.string.cancel))
                 }
             },
-            text = { Text("Deseja zerar todos pontos e voltar ao início") }
+            text = { Text(stringResource(R.string.confir_reset_msg)) }
         )
     }
 
@@ -146,8 +162,10 @@ fun Screen(
     )
 
     Row(
-        modifier = modifier.fillMaxSize(),
-        horizontalArrangement = Arrangement.Center,
+        modifier = modifier
+            .fillMaxSize()
+            .padding(bottom = 16.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
         Player(
             points = uiState.playerOne.count,
@@ -161,7 +179,7 @@ fun Screen(
             onSaveName = appViewModel::changeNamePlayerOne,
             color = Black,
         )
-        Spacer(modifier = Modifier.width(16.dp))
+        //Spacer(modifier = Modifier.width(16.dp))
 
         Player(
             points = uiState.playerTwo.count,
@@ -179,7 +197,7 @@ fun Screen(
 
 }
 
-// TODO(deixar botoes e texto maiores)
+
 @Composable
 fun Player(
     modifier: Modifier = Modifier.fillMaxHeight(),
@@ -194,42 +212,113 @@ fun Player(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Column(modifier.weight(1f),  horizontalAlignment = Alignment.CenterHorizontally,) {
+            PlayerName(name = name, onSaveName = onSaveName, finally = { })
+            Spacer(modifier = Modifier.size(28.dp))
+            Text(
+                text = points.toString(),
+                textAlign = TextAlign.Center,
+                color = Color.White,
+                style = Typography.titleLarge,
+                modifier = Modifier
+                    .size(120.dp)
+                    .background(color = color, shape = CircleShape)
+                    .wrapContentHeight(align = Alignment.CenterVertically)
+            )
+            Spacer(modifier = Modifier.size(18.dp))
+            Text(
+                text = wins.toString(),
+                textAlign = TextAlign.Center,
+                color = Color.White,
+                modifier = Modifier
+                    .size(70.dp)
+                    .background(color = Color.Blue, shape = PentagoShape())
+                    .wrapContentHeight(align = Alignment.CenterVertically)
 
-        PlayerName(name = name, onSaveName =  onSaveName, finally = { })
-        Text(text = points.toString())
-        // TODO(btn deve se quadrado)
-        Button(
-            onClick = onAddThree,
-            shape=RectangleShape,
-            modifier=Modifier.padding(8.dp),
-            colors=ButtonDefaults.buttonColors(containerColor = color, contentColor = Color.White),
+            )
+
+        }
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.SpaceBetween) {
+
+
+            Button(
+                onClick = onAddThree,
+                shape = RectangleShape,
+                modifier = Modifier.size(70.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = color,
+                    contentColor = Color.White
+                ),
             ) {
-            Text("+3",)
-        }
-        Button(
-            onClick = onAddOne,
-            shape = RectangleShape,
-            modifier = Modifier.padding(8.dp),
-            colors=ButtonDefaults.buttonColors(containerColor = color),
-        ) {
-            Text("+1")
+                Text("+3")
+            }
+            Button(
+                onClick = onAddOne,
+                shape = RectangleShape,
+                modifier = Modifier.size(70.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = color,
+                    contentColor = Color.White
+                ),
+            ) {
+                Text("+1")
+            }
+
+            Button(
+                onClick = onMinusOne,
+                shape = RectangleShape,
+                modifier = Modifier.size(70.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = color,
+                    contentColor = Color.White
+                )
+            ) {
+                Text("-1")
+            }
         }
 
-        Button(
-            onClick = onMinusOne,
-            shape=RectangleShape,
-            modifier=Modifier.padding(8.dp),
-            colors=ButtonDefaults.buttonColors(containerColor = color),
-        ) {
-            Text("-1", )
-        }
-
-        Button(onClick = {}) {
-            Text(wins.toString())
-        }
     }
+}
+
+class PentagoShape : Shape {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density
+    ): Outline {
+        return Outline.Generic(
+            path = mycustonDraw(size = size)
+        )
+    }
+    // TODO(deixar estrela certinho)
+    fun mycustonDraw(size: Size): Path {
+        val path = Path()
+        path.moveTo(0f, 0f)
+        path.lineTo(size.width / 2f, size.height / 2f)
+        path.lineTo(size.width, 0f)
+        path.close()
+
+        val tp = Path().apply {
+            moveTo(0f, 0f)
+            lineTo(size.width / 2f, size.height / 2f)
+            lineTo(size.width, 0f)
+            close()
+        }
+        val bt = Path().apply {
+            moveTo(0f, size.height)
+            lineTo(size.width / 2f, size.height / 2f)
+            lineTo(size.width, size.height)
+            close()
+        }
+        tp.addPath(bt, Offset(0f, 0f))
+        return tp
+    }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -254,7 +343,7 @@ fun PlayerName(name: String, onSaveName: (name: String) -> Unit, finally: () -> 
                     onSaveName(tmpName)
                     finally()
                 }) {
-                    Text("Salvar")
+                    Text(stringResource(R.string.save))
                 }
             },
             dismissButton = {
@@ -262,7 +351,7 @@ fun PlayerName(name: String, onSaveName: (name: String) -> Unit, finally: () -> 
                     showChangeNameDialog = false
                     finally()
                 }) {
-                    Text("Cancelar")
+                    Text(stringResource(R.string.cancel))
                 }
             },
             title = {
@@ -283,12 +372,12 @@ fun PlayerName(name: String, onSaveName: (name: String) -> Unit, finally: () -> 
         )
     }
 }
-
+//TODO(avaliar se eh possivel apenas chamar as funcoes de edit emvez de criar PlayerName)
 @Composable
 fun ScreamMenu(
     reset: () -> Unit,
-    optA:  @Composable (() -> Unit) -> Unit, // clear menu after complete edit a name
-    optB:  @Composable (() -> Unit) -> Unit,
+    optA: @Composable (() -> Unit) -> Unit, // clear menu after complete edit a name
+    optB: @Composable (() -> Unit) -> Unit,
 ) {
     // nova callback passa clear e retorna composable
     var expanded by remember { mutableStateOf(false) }
@@ -301,20 +390,26 @@ fun ScreamMenu(
     )
     {
         IconButton(onClick = { expanded = true }) {
-            Icon(Icons.Default.MoreVert, contentDescription = "More options")
+            Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.description_menu))
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            DropdownMenuItem(text = { Text("Zerar tudo") }, onClick = {
+            DropdownMenuItem(text = { Text(stringResource(R.string.clear_msg)) }, onClick = {
                 expanded = false
                 reset()
             })
-            DropdownMenuItem(text = {
-                optA() { expanded = false }
-            }, onClick = { }, leadingIcon = { Icon(Icons.Outlined.Edit, contentDescription = "editar") })
+            DropdownMenuItem(
+                text = {
+                    optA() { expanded = false }
+                },
+                onClick = { },
+                leadingIcon = { Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.description_edit)) })
 
-            DropdownMenuItem(text = {
-                optB() { expanded = false }
-            }, onClick = { }, leadingIcon = { Icon(Icons.Outlined.Edit, contentDescription = "editar") })
+            DropdownMenuItem(
+                text = {
+                    optB() { expanded = false }
+                },
+                onClick = { },
+                leadingIcon = { Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.description_edit)) })
         }
     }
 }
