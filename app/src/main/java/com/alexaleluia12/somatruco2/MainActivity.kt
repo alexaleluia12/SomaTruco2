@@ -43,7 +43,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
@@ -71,6 +70,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         val sound = SoundPool.Builder().setMaxStreams(1).build()
+        // TODO(usar lazy inity)
         val soundId = sound.load(applicationContext, R.raw.bit_sound, 1)
 
 
@@ -242,7 +242,7 @@ fun Player(
                 color = Color.White,
                 modifier = Modifier
                     .size(70.dp)
-                    .background(color = Color.Blue, shape = PentagoShape())
+                    .background(color = Color.Blue, shape = GoldenShape())
                     .wrapContentHeight(align = Alignment.CenterVertically)
 
             )
@@ -292,42 +292,33 @@ fun Player(
     }
 }
 
-class PentagoShape : Shape {
+class GoldenShape : Shape {
     override fun createOutline(
         size: Size,
         layoutDirection: LayoutDirection,
         density: Density
     ): Outline {
+
         return Outline.Generic(
-            path = mycustonDraw(size = size)
+            path = rotatedSquare(size = size)
         )
     }
-    // TODO(deixar estrela certinho)
-    fun mycustonDraw(size: Size): Path {
+
+    private fun rotatedSquare(size: Size): Path {
         val path = Path()
-        path.moveTo(0f, 0f)
-        path.lineTo(size.width / 2f, size.height / 2f)
-        path.lineTo(size.width, 0f)
+        path.moveTo(size.width / 2f, size.height)
+        path.lineTo(size.width, size.height / 2f)
+
+        path.lineTo(size.width / 2f, 0f)
+        path.lineTo(0f, size.height / 2f)
+
         path.close()
 
-        val tp = Path().apply {
-            moveTo(0f, 0f)
-            lineTo(size.width / 2f, size.height / 2f)
-            lineTo(size.width, 0f)
-            close()
-        }
-        val bt = Path().apply {
-            moveTo(0f, size.height)
-            lineTo(size.width / 2f, size.height / 2f)
-            lineTo(size.width, size.height)
-            close()
-        }
-        tp.addPath(bt, Offset(0f, 0f))
-        return tp
+        return path
     }
 
 }
-
+// TODO(implementar outra forma de mudar o nome do jogador, de forma mais desacoplada)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerName(name: String, onSaveName: (name: String) -> Unit, finally: () -> Unit) {
