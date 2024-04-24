@@ -7,6 +7,7 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alexaleluia12.somatruco2.data.AppProperties
 import com.alexaleluia12.somatruco2.data.GameViewModel
+import com.alexaleluia12.somatruco2.data.Player
 import com.alexaleluia12.somatruco2.ui.theme.Black
 import com.alexaleluia12.somatruco2.ui.theme.Red
 import com.alexaleluia12.somatruco2.ui.theme.SomaTruco2Theme
@@ -127,7 +129,6 @@ fun Screen(
         playSound()
     }
     var showResetAlert by remember { mutableStateOf(false) }
-
     if (showResetAlert) {
         AlertDialog(
             onDismissRequest = {
@@ -150,22 +151,43 @@ fun Screen(
         )
     }
 
+    var canShowChangeNameDialog by remember {
+        mutableStateOf(false)
+    }
+    if (canShowChangeNameDialog) {
+        DialogChangeName(
+            name = appViewModel.editTarget?.name ?: "x" ,
+            onSaveName = {
+                // TODO(cagada)
+                 if(appViewModel.editTarget == uiState.playerOne) {
+                     appViewModel.changeNamePlayerOne(it)
+                 } else {
+                     appViewModel.changeNamePlayerTwo(it)
+                 }
+            },
+            onDismiss = { canShowChangeNameDialog = false }
+        )
+    }
 
     ScreamMenu(
-        reset = { showResetAlert = true },
-        optA = {
-            PlayerName(
-                name = uiState.playerOne.name,
-                onSaveName = appViewModel::changeNamePlayerOne,
-                finally = it
+        trigerShowResetAlert = { showResetAlert = true },
+        optA =
+            MenuOption(
+                showText = uiState.playerOne.name,
+                trigerEditName = {
+                    appViewModel.editTarget = uiState.playerOne
+                    canShowChangeNameDialog = true
+                },
+
             )
-        }, optB = {
-            PlayerName(
-                name = uiState.playerTwo.name,
-                onSaveName = appViewModel::changeNamePlayerTwo,
-                finally = it
+        , optB =
+            MenuOption(
+                showText = uiState.playerTwo.name,
+                trigerEditName = {
+                    appViewModel.editTarget = uiState.playerTwo
+                    canShowChangeNameDialog = true
+                },
             )
-        }
     )
 
     Row(
@@ -174,29 +196,30 @@ fun Screen(
             .padding(bottom = 16.dp),
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
-        Player(
+        PlayerScreen(
             points = uiState.playerOne.count,
             wins = uiState.playerOne.winCount,
             name = uiState.playerOne.name,
-            // TODO(resolver) - aparece qnd aperta em +1
-            // ForceDarkHelper  com.alexaleluia12.somatruco2  D  updateByCheckExcludeList:
+            player = uiState.playerOne,
             onAddOne = appViewModel::incByOneForPlayerOne,
             onAddThree = appViewModel::incByThreeForPlayerOne,
             onMinusOne = appViewModel::decByOneForPlayerOne,
-            onSaveName = appViewModel::changeNamePlayerOne,
             color = Black,
+            trigerSaveName = {canShowChangeNameDialog = true},
+            setEditTarget = {appViewModel.editTarget = it},
         )
-        //Spacer(modifier = Modifier.width(16.dp))
 
-        Player(
+        PlayerScreen(
             points = uiState.playerTwo.count,
             wins = uiState.playerTwo.winCount,
             name = uiState.playerTwo.name,
+            player = uiState.playerTwo,
             onAddOne = appViewModel::incByOneForPlayerTwo,
             onAddThree = appViewModel::incByThreeForPlayerTwo,
             onMinusOne = appViewModel::decByOneForPlayerTwo,
-            onSaveName = appViewModel::changeNamePlayerTwo,
             color = Red,
+            trigerSaveName = {canShowChangeNameDialog = true},
+            setEditTarget  = {appViewModel.editTarget = it}
         )
 
 
@@ -206,16 +229,18 @@ fun Screen(
 
 
 @Composable
-fun Player(
+fun PlayerScreen(
     modifier: Modifier = Modifier.fillMaxHeight(),
     points: Int = 0,
     wins: Int = 0,
     name: String = "P",
     color: Color,
-    onSaveName: (name: String) -> Unit,
+    player: Player,
     onAddThree: () -> Unit,
     onAddOne: () -> Unit,
     onMinusOne: () -> Unit,
+    trigerSaveName: () -> Unit,
+    setEditTarget: (p: Player) -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -223,7 +248,10 @@ fun Player(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Column(modifier.weight(1f),  horizontalAlignment = Alignment.CenterHorizontally,) {
-            PlayerName(name = name, onSaveName = onSaveName, finally = { })
+            Text(text=name, modifier = Modifier.clickable {
+                setEditTarget(player)
+                trigerSaveName()
+            })
             Spacer(modifier = Modifier.size(28.dp))
             Text(
                 text = points.toString(),
@@ -244,14 +272,12 @@ fun Player(
                     .size(70.dp)
                     .background(color = Color.Blue, shape = GoldenShape())
                     .wrapContentHeight(align = Alignment.CenterVertically)
-
             )
 
         }
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.SpaceBetween) {
-
 
             Button(
                 onClick = onAddThree,
@@ -318,64 +344,58 @@ class GoldenShape : Shape {
     }
 
 }
-// TODO(implementar outra forma de mudar o nome do jogador, de forma mais desacoplada)
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayerName(name: String, onSaveName: (name: String) -> Unit, finally: () -> Unit) {
-    var showChangeNameDialog by remember { mutableStateOf(false) }
-
-    TextButton(onClick = { showChangeNameDialog = true }) {
-        Text(name)
-    }
+fun DialogChangeName(name: String, onSaveName: (name: String) -> Unit, onDismiss: () -> Unit) {
     var tmpName by remember { mutableStateOf(name) }
 
-    if (showChangeNameDialog) {
-        AlertDialog(
-            onDismissRequest = {
-                showChangeNameDialog = false
-                finally()
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    showChangeNameDialog = false
-                    onSaveName(tmpName)
-                    finally()
-                }) {
-                    Text(stringResource(R.string.save))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showChangeNameDialog = false
-                    finally()
-                }) {
-                    Text(stringResource(R.string.cancel))
-                }
-            },
-            title = {
-                Text(
-                    stringResource(
-                        R.string.availableSpace,
-                        AppProperties.MAX_NAME_LENGTH - tmpName.length
-                    )
-                )
-            },
-            text = {
-                TextField(value = tmpName, onValueChange = {
-                    if (it.length <= AppProperties.MAX_NAME_LENGTH) {
-                        tmpName = it
-                    }
-                })
+    AlertDialog(
+        onDismissRequest = {
+            onDismiss()
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                onSaveName(tmpName)
+                onDismiss()
+            }) {
+                Text(stringResource(R.string.save))
             }
-        )
-    }
+        },
+        dismissButton = {
+            TextButton(onClick = {
+                onDismiss()
+            }) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+        title = {
+            Text(
+                stringResource(
+                    R.string.availableSpace,
+                    AppProperties.MAX_NAME_LENGTH - tmpName.length
+                )
+            )
+        },
+        text = {
+            TextField(value = tmpName, onValueChange = {
+                if (it.length <= AppProperties.MAX_NAME_LENGTH) {
+                    tmpName = it
+                }
+            })
+        }
+    )
+
 }
-//TODO(avaliar se eh possivel apenas chamar as funcoes de edit emvez de criar PlayerName)
+
+data class MenuOption(val showText: String, val trigerEditName: () -> Unit)
+
 @Composable
 fun ScreamMenu(
-    reset: () -> Unit,
-    optA: @Composable (() -> Unit) -> Unit, // clear menu after complete edit a name
-    optB: @Composable (() -> Unit) -> Unit,
+    trigerShowResetAlert: () -> Unit,
+    optA: MenuOption, // clear menu after complete edit a name
+    optB: MenuOption,
 ) {
     // nova callback passa clear e retorna composable
     var expanded by remember { mutableStateOf(false) }
@@ -388,26 +408,45 @@ fun ScreamMenu(
     )
     {
         IconButton(onClick = { expanded = true }) {
-            Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.description_menu))
+            Icon(
+                Icons.Default.MoreVert,
+                contentDescription = stringResource(R.string.description_menu)
+            )
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             DropdownMenuItem(text = { Text(stringResource(R.string.clear_msg)) }, onClick = {
                 expanded = false
-                reset()
+                trigerShowResetAlert()
             })
             DropdownMenuItem(
                 text = {
-                    optA() { expanded = false }
+                    Text(optA.showText)
                 },
-                onClick = { },
-                leadingIcon = { Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.description_edit)) })
+                onClick = {
+                    expanded = false
+                    optA.trigerEditName()
+                },
+                leadingIcon = {
+                    Icon(
+                        Icons.Outlined.Edit,
+                        contentDescription = stringResource(R.string.description_edit)
+                    )
+                })
 
             DropdownMenuItem(
                 text = {
-                    optB() { expanded = false }
+                    Text(optB.showText)
                 },
-                onClick = { },
-                leadingIcon = { Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.description_edit)) })
+                onClick = {
+                    expanded = false
+                    optB.trigerEditName()
+                },
+                leadingIcon = {
+                    Icon(
+                        Icons.Outlined.Edit,
+                        contentDescription = stringResource(R.string.description_edit)
+                    )
+                })
         }
     }
 }

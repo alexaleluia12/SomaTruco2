@@ -13,6 +13,7 @@ class GameViewModel: ViewModel() {
     var uiState: GameState by mutableStateOf(GameState(p1.copy(), p2.copy()))
        private set
     private val counter = CountController(p1, p2)
+    var editTarget: Player? = null
 
     fun incByOneForPlayerOne() {
 
