@@ -1,6 +1,7 @@
 package com.alexaleluia12.somatruco2
 
 
+import android.media.SoundPool
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
@@ -15,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
@@ -44,7 +44,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
@@ -71,6 +70,10 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        val sound = SoundPool.Builder().setMaxStreams(1).build()
+        val soundId = sound.load(applicationContext, R.raw.bit_sound, 1)
+
+
         setContent {
             SomaTruco2Theme {
                 // A surface container using the 'background' color from the theme
@@ -78,7 +81,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Screen()
+                    Screen(playSound = {
+                        sound.play(soundId, 0.4f, 0.4f, 0,1,1.0f)
+                    })
                 }
             }
         }
@@ -88,7 +93,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Screen(
     modifier: Modifier = Modifier,
-    appViewModel: GameViewModel = viewModel()
+    appViewModel: GameViewModel = viewModel(),
+    playSound: () -> Unit = {},
 ) {
     val uiState = appViewModel.uiState
     var canShowAlert by remember {
@@ -118,6 +124,7 @@ fun Screen(
             },
             text = { Text(stringResource(R.string.breakthrow_point)) }
         )
+        playSound()
     }
     var showResetAlert by remember { mutableStateOf(false) }
 
