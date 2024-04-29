@@ -79,8 +79,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         val sound = SoundPool.Builder().setMaxStreams(1).build()
-        // TODO(usar lazy inity)
         val soundId = sound.load(applicationContext, R.raw.bit_sound, 1)
+
 
 
         setContent {
@@ -109,7 +109,8 @@ fun Screen(
     var canShowAlert by remember {
         mutableStateOf(false)
     }
-    // TODO(resolver erro qnd clica num dialog, esta acontecendo com todos)
+    // TODO(verificar se erro existe em outros apps de referencia)
+    // se for Viavel = resolver erro qnd clica num dialog, esta acontecendo com todos
     // ? sera que um erro desse eh critico o suficiente para impedir de por na loja
     // consigo rodar outros app com composa para verificar, todas dependencias estao atualizadas
     // InputDispatcher         system_server    E  Window handle Window{ccfa8e2 u0 com.alexaleluia12.somatruco2/com.alexaleluia12.somatruco2.MainActivity} has no registered input channel
@@ -171,14 +172,9 @@ fun Screen(
     }
     if (canShowChangeNameDialog) {
         DialogChangeName(
-            name = appViewModel.editTarget?.name ?: "x" ,
+            name = appViewModel.editTarget?.name ?: "" ,
             onSaveName = {
-                // TODO(cagada)
-                 if(appViewModel.editTarget == uiState.playerOne) {
-                     appViewModel.changeNamePlayerOne(it)
-                 } else {
-                     appViewModel.changeNamePlayerTwo(it)
-                 }
+                appViewModel.changeNameTo(it)
             },
             onDismiss = { canShowChangeNameDialog = false }
         )
@@ -190,7 +186,7 @@ fun Screen(
             MenuOption(
                 showText = uiState.playerOne.name,
                 trigerEditName = {
-                    appViewModel.editTarget = uiState.playerOne
+                    appViewModel.editTarget = appViewModel.playerOne
                     canShowChangeNameDialog = true
                 },
 
@@ -199,7 +195,7 @@ fun Screen(
             MenuOption(
                 showText = uiState.playerTwo.name,
                 trigerEditName = {
-                    appViewModel.editTarget = uiState.playerTwo
+                    appViewModel.editTarget = appViewModel.playerTwo
                     canShowChangeNameDialog = true
                 },
             )
@@ -215,7 +211,7 @@ fun Screen(
             points = uiState.playerOne.count,
             wins = uiState.playerOne.winCount,
             name = uiState.playerOne.name,
-            player = uiState.playerOne,
+            player = appViewModel.playerOne,
             onAddOne = appViewModel::incByOneForPlayerOne,
             onAddThree = appViewModel::incByThreeForPlayerOne,
             onMinusOne = appViewModel::decByOneForPlayerOne,
@@ -228,7 +224,7 @@ fun Screen(
             points = uiState.playerTwo.count,
             wins = uiState.playerTwo.winCount,
             name = uiState.playerTwo.name,
-            player = uiState.playerTwo,
+            player = appViewModel.playerTwo,
             onAddOne = appViewModel::incByOneForPlayerTwo,
             onAddThree = appViewModel::incByThreeForPlayerTwo,
             onMinusOne = appViewModel::decByOneForPlayerTwo,
@@ -293,7 +289,8 @@ fun PlayerScreen(
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.SpaceBetween) {
-
+            // TODO(criar style centralizado para os botoes)
+            // TODO(qnd clica nos botes vibrar um pouco)
             Button(
                 onClick = onAddThree,
                 shape = RectangleShape,

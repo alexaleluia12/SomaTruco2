@@ -32,7 +32,8 @@ class GameSmokeInstrumentalTest {
     fun viewModel_update_name_does_not_affect_other() {
         val newName = "Bob"
         val prevPlayerTwoName = vm.uiState.playerTwo.name
-        vm.changeNamePlayerOne(newName)
+        vm.editTarget = vm.playerOne
+        vm.changeNameTo(newName)
         val currentStateUi = vm.uiState
 
         assertEquals(newName, currentStateUi.playerOne.name)

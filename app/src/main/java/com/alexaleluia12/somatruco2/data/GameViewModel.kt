@@ -14,6 +14,10 @@ class GameViewModel: ViewModel() {
        private set
     private val counter = CountController(p1, p2)
     var editTarget: Player? = null
+    val playerOne
+        get() = p1
+    val playerTwo
+        get() = p2
 
     fun incByOneForPlayerOne() {
 
@@ -71,14 +75,9 @@ class GameViewModel: ViewModel() {
         uiState = uiState.copy(playerOne = p1.copy(), playerTwo = p2.copy())
     }
 
-    fun changeNamePlayerOne(newName: String) {
-        p1.name = newName
-        uiState = uiState.copy(playerOne = p1.copy())
-    }
-
-    fun changeNamePlayerTwo(newName: String) {
-        p2.name = newName
-        uiState = uiState.copy(playerTwo = p2.copy())
+    fun changeNameTo(newName: String) {
+        editTarget?.name = newName
+        uiState = uiState.copy(playerOne = p1.copy(), playerTwo = p2.copy())
     }
 }
 
