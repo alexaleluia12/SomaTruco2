@@ -104,13 +104,8 @@ fun Screen(
     }
     // TODO(resolver erro qnd mostra Alerta)
     // InputDispatcher         system_server    E  Window handle Window{ccfa8e2 u0 com.alexaleluia12.somatruco2/com.alexaleluia12.somatruco2.MainActivity} has no registered input channel
-    LaunchedEffect(uiState.playerOne, uiState.playerTwo) {
-        // esta quase do jeito que eu quero
-        // lanca o sinal so uma vez, enquanto o outro jogadr incrementa o numero dele
-        // nao deve mostrar novamente anão ser que ele chege a 11 tmb
-        if (uiState.playerOne.count == 11 || uiState.playerTwo.count == 11) {
-            canShowAlert = true
-        }
+    LaunchedEffect(uiState.playerOne.closeToWin, uiState.playerTwo.closeToWin) {
+        canShowAlert = uiState.playerOne.closeToWin || uiState.playerTwo.closeToWin
     }
 
     if (canShowAlert) {

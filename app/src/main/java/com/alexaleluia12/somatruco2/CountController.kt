@@ -10,14 +10,20 @@ class CountController(val player1: Player, val player2: Player) {
     }
 
     fun verifyWinCondition(): Boolean {
+        if (player1.count >= GameProperties.ALERT_LIMIT && !player1.closeToWin) {
+            player1.closeToWin = true
+        }
+        if (player2.count >= GameProperties.ALERT_LIMIT && !player2.closeToWin) {
+            player2.closeToWin = true
+        }
+
         if (playerHasWin(player1)){
-            println(player1.name + " win!")
             player2.count = 0
+            player2.closeToWin = false
             return true
         } else if(playerHasWin(player2)) {
             player1.count = 0
-
-            println(player2.name + " win!")
+            player1.closeToWin = false
             return true
         }
         return false
@@ -28,6 +34,7 @@ class CountController(val player1: Player, val player2: Player) {
             player.apply {
                 winCount += 1
                 count = 0
+                closeToWin = false
             }
             true
         } else {
@@ -39,10 +46,12 @@ class CountController(val player1: Player, val player2: Player) {
         player1.apply {
             winCount = 0
             count = 0
+            closeToWin = false
         }
         player2.apply {
             winCount = 0
             count = 0
+            closeToWin = false
         }
     }
 
