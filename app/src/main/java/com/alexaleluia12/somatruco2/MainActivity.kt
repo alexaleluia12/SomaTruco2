@@ -15,17 +15,21 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +42,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,6 +61,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alexaleluia12.somatruco2.data.AppProperties
 import com.alexaleluia12.somatruco2.data.GameViewModel
@@ -102,26 +109,39 @@ fun Screen(
     var canShowAlert by remember {
         mutableStateOf(false)
     }
-    // TODO(resolver erro qnd mostra Alerta)
+    // TODO(resolver erro qnd clica num dialog, esta acontecendo com todos)
+    // ? sera que um erro desse eh critico o suficiente para impedir de por na loja
+    // consigo rodar outros app com composa para verificar, todas dependencias estao atualizadas
     // InputDispatcher         system_server    E  Window handle Window{ccfa8e2 u0 com.alexaleluia12.somatruco2/com.alexaleluia12.somatruco2.MainActivity} has no registered input channel
     LaunchedEffect(uiState.playerOne.closeToWin, uiState.playerTwo.closeToWin) {
         canShowAlert = uiState.playerOne.closeToWin || uiState.playerTwo.closeToWin
     }
 
     if (canShowAlert) {
-        // tmb quero mostrar um sinal sonoro
-        AlertDialog(
+        Dialog(
             onDismissRequest = {
                 canShowAlert = false
             },
-            confirmButton = {
-                TextButton(onClick = { canShowAlert = false }) {
-                    Text(stringResource(R.string.ok))
-                }
-            },
-            text = { Text(stringResource(R.string.breakthrow_point)) }
-        )
-        playSound()
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(90.dp),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.breakthrow_point),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentSize(align = Alignment.Center),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+        SideEffect {
+            playSound()
+        }
+
     }
     var showResetAlert by remember { mutableStateOf(false) }
     if (showResetAlert) {

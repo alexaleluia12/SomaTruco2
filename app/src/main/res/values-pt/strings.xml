@@ -3,7 +3,7 @@
     <string name="app_name">SomaTruco2</string>
     <string name="availableSpace">Mudar nome(%1$d)</string>
     <string name="ok">OK</string>
-    <string name="breakthrow_point">Cuidade! está de 11</string>
+    <string name="breakthrow_point">Cuidado! está de 11</string>
     <string name="cancel">Cancelar</string>
     <string name="confir_reset_msg">Deseja zerar todos pontos e voltar ao início</string>
     <string name="save">Salvar</string>
