@@ -289,40 +289,15 @@ fun PlayerScreen(
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.SpaceBetween) {
-            // TODO(criar style centralizado para os botoes)
             // TODO(qnd clica nos botes vibrar um pouco)
-            Button(
-                onClick = onAddThree,
-                shape = RectangleShape,
-                modifier = Modifier.size(70.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = color,
-                    contentColor = Color.White
-                ),
-            ) {
+
+            MySquareButton(color = color, onClick = onAddThree) {
                 Text("+3")
             }
-            Button(
-                onClick = onAddOne,
-                shape = RectangleShape,
-                modifier = Modifier.size(70.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = color,
-                    contentColor = Color.White
-                ),
-            ) {
+            MySquareButton(color = color, onClick = onAddOne) {
                 Text("+1")
             }
-
-            Button(
-                onClick = onMinusOne,
-                shape = RectangleShape,
-                modifier = Modifier.size(70.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = color,
-                    contentColor = Color.White
-                )
-            ) {
+            MySquareButton(color = color, onClick = onMinusOne) {
                 Text("-1")
             }
         }
@@ -330,6 +305,22 @@ fun PlayerScreen(
     }
 }
 
+@Composable
+fun MySquareButton(color: Color, onClick: () -> Unit, content: @Composable () -> Unit) {
+    Button(
+        onClick = onClick,
+        shape = RectangleShape,
+        modifier = Modifier.size(70.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = color,
+            contentColor = Color.White
+        )
+    ) {
+        content()
+    }
+}
+
+// TODO(mover alguns partes para fora do MainActivity)
 class GoldenShape : Shape {
     override fun createOutline(
         size: Size,
@@ -357,7 +348,7 @@ class GoldenShape : Shape {
 
 }
 
-
+// TODO(dialogo no tema escuro ta muito ruim)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DialogChangeName(name: String, onSaveName: (name: String) -> Unit, onDismiss: () -> Unit) {
@@ -406,10 +397,10 @@ data class MenuOption(val showText: String, val trigerEditName: () -> Unit)
 @Composable
 fun ScreamMenu(
     trigerShowResetAlert: () -> Unit,
-    optA: MenuOption, // clear menu after complete edit a name
+    optA: MenuOption,
     optB: MenuOption,
 ) {
-    // nova callback passa clear e retorna composable
+
     var expanded by remember { mutableStateOf(false) }
 
     Box(
