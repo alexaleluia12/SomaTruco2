@@ -3,6 +3,7 @@ package com.alexaleluia12.somatruco2
 
 import android.media.SoundPool
 import android.os.Bundle
+import android.view.HapticFeedbackConstants
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -55,6 +56,10 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -289,8 +294,6 @@ fun PlayerScreen(
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.SpaceBetween) {
-            // TODO(qnd clica nos botes vibrar um pouco)
-
             MySquareButton(color = color, onClick = onAddThree) {
                 Text("+3")
             }
@@ -300,6 +303,7 @@ fun PlayerScreen(
             MySquareButton(color = color, onClick = onMinusOne) {
                 Text("-1")
             }
+
         }
 
     }
@@ -349,7 +353,6 @@ class GoldenShape : Shape {
 }
 
 // TODO(dialogo no tema escuro ta muito ruim)
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DialogChangeName(name: String, onSaveName: (name: String) -> Unit, onDismiss: () -> Unit) {
     var tmpName by remember { mutableStateOf(name) }
@@ -359,18 +362,18 @@ fun DialogChangeName(name: String, onSaveName: (name: String) -> Unit, onDismiss
             onDismiss()
         },
         confirmButton = {
-            TextButton(onClick = {
+            Button(onClick = {
                 onSaveName(tmpName)
                 onDismiss()
             }) {
-                Text(stringResource(R.string.save))
+                Text(stringResource(R.string.save), color = Color.White)
             }
         },
         dismissButton = {
-            TextButton(onClick = {
+            Button(onClick = {
                 onDismiss()
             }) {
-                Text(stringResource(R.string.cancel))
+                Text(stringResource(R.string.cancel), color = Color.White)
             }
         },
         title = {
