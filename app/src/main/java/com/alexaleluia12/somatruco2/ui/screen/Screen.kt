@@ -43,11 +43,7 @@ fun Screen(
     var canShowAlert by remember {
         mutableStateOf(false)
     }
-    // TODO(verificar se erro existe em outros apps de referencia)
-    // se for Viavel = resolver erro qnd clica num dialog, esta acontecendo com todos
-    // ? sera que um erro desse eh critico o suficiente para impedir de por na loja
-    // consigo rodar outros app com composa para verificar, todas dependencias estao atualizadas
-    // InputDispatcher         system_server    E  Window handle Window{ccfa8e2 u0 com.alexaleluia12.somatruco2/com.alexaleluia12.somatruco2.MainActivity} has no registered input channel
+
     LaunchedEffect(uiState.playerOne.closeToWin, uiState.playerTwo.closeToWin) {
         canShowAlert = uiState.playerOne.closeToWin || uiState.playerTwo.closeToWin
     }
